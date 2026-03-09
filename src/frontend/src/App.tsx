@@ -40,7 +40,7 @@ function Layout() {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
               <Wrench className="w-4 h-4" />
             </div>
-            <span>ServiceConnect</span>
+            <span>help</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -194,7 +194,7 @@ function Layout() {
               <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center text-primary-foreground">
                 <Wrench className="w-3.5 h-3.5" />
               </div>
-              <span>ServiceConnect</span>
+              <span>help</span>
             </div>
             <p className="text-sm text-muted-foreground text-center">
               © {new Date().getFullYear()}. Built with ❤️ using{" "}
@@ -244,6 +244,12 @@ const browseRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/browse",
   component: BrowsePage,
+  validateSearch: (
+    search: Record<string, unknown>,
+  ): { search?: string; category?: string } => ({
+    ...(search.search ? { search: search.search as string } : {}),
+    ...(search.category ? { category: search.category as string } : {}),
+  }),
 });
 
 const registerRoute = createRoute({

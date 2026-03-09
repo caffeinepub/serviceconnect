@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "@tanstack/react-router";
+import { Input } from "@/components/ui/input";
+import { Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowRight,
   CheckCircle,
@@ -11,6 +12,7 @@ import {
   Users,
 } from "lucide-react";
 import { type Variants, motion } from "motion/react";
+import { useState } from "react";
 import { allCategories, categoryMeta } from "../utils/serviceUtils";
 
 const howItWorks = [
@@ -74,6 +76,14 @@ const itemVariants: Variants = {
 };
 
 export function LandingPage() {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    navigate({ to: "/browse", search: { search: searchQuery } });
+  }
+
   return (
     <div className="overflow-x-hidden">
       {/* ── Hero ─────────────────────────────── */}
@@ -172,6 +182,40 @@ export function LandingPage() {
                 </Button>
               </Link>
             </motion.div>
+
+            {/* ── Hero Search Bar ─────────────────── */}
+            <motion.form
+              variants={itemVariants}
+              onSubmit={handleSearch}
+              className="mt-8 w-full max-w-xl"
+            >
+              <div className="relative flex items-center">
+                <Search className="absolute left-4 w-5 h-5 text-white/50 pointer-events-none" />
+                <Input
+                  data-ocid="hero.search_input"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="How can I help you today?"
+                  className="pl-12 pr-32 h-14 text-base rounded-2xl bg-white/10 border-white/25 text-white placeholder:text-white/50 focus:bg-white/15 focus:border-white/50 focus-visible:ring-1 focus-visible:ring-white/40 transition-all backdrop-blur-sm"
+                />
+                <Button
+                  data-ocid="hero.search_button"
+                  type="submit"
+                  size="sm"
+                  className="absolute right-2 h-10 px-5 rounded-xl font-semibold text-sm gap-1.5"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, oklch(0.78 0.12 75), oklch(0.68 0.14 65))",
+                    color: "oklch(0.18 0.04 55)",
+                    border: "none",
+                  }}
+                >
+                  Search
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </motion.form>
           </motion.div>
         </div>
 

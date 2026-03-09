@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { useSearch } from "@tanstack/react-router";
 import {
   Briefcase,
   CheckCircle2,
@@ -35,7 +36,7 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ServiceCategory, ServiceProvider } from "../backend";
 import {
   useReviewsForProvider,
@@ -612,14 +613,24 @@ function ProviderGridSkeleton() {
 // Browse Page
 // ─────────────────────────────────────────────
 export function BrowsePage() {
+  const urlSearch = useSearch({ from: "/browse" });
   const [categoryFilter, setCategoryFilter] = useState<ServiceCategory | null>(
     null,
   );
-  const [locationFilter, setLocationFilter] = useState("");
-  const [searchLocation, setSearchLocation] = useState<string | null>(null);
+  const [locationFilter, setLocationFilter] = useState(urlSearch.search ?? "");
+  const [searchLocation, setSearchLocation] = useState<string | null>(
+    urlSearch.search ?? null,
+  );
   const [selectedProvider, setSelectedProvider] =
     useState<ServiceProvider | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Apply category from URL param on mount
+  useEffect(() => {
+    if (urlSearch.category) {
+      setCategoryFilter(urlSearch.category as ServiceCategory);
+    }
+  }, [urlSearch.category]);
 
   const {
     data: providers = [],
