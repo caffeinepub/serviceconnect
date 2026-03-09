@@ -42,15 +42,25 @@ export const ServiceProvider = IDL.Record({
   'location' : IDL.Text,
 });
 export const UserProfile = IDL.Record({ 'name' : IDL.Text });
+export const Review = IDL.Record({
+  'id' : IDL.Nat,
+  'createdAt' : IDL.Int,
+  'reviewerName' : IDL.Text,
+  'comment' : IDL.Text,
+  'rating' : IDL.Nat,
+  'providerId' : IDL.Nat,
+});
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'approveProvider' : IDL.Func([IDL.Nat], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'getApprovedProviders' : IDL.Func([], [IDL.Vec(ServiceProvider)], ['query']),
+  'getAverageRating' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Nat)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getProvider' : IDL.Func([IDL.Nat], [IDL.Opt(ServiceProvider)], ['query']),
+  'getReviewsForProvider' : IDL.Func([IDL.Nat], [IDL.Vec(Review)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -78,6 +88,11 @@ export const idlService = IDL.Service({
       [IDL.Opt(ServiceCategory), IDL.Opt(IDL.Text)],
       [IDL.Vec(ServiceProvider)],
       ['query'],
+    ),
+  'submitReview' : IDL.Func(
+      [IDL.Nat, IDL.Text, IDL.Nat, IDL.Text],
+      [IDL.Nat],
+      [],
     ),
 });
 
@@ -118,6 +133,14 @@ export const idlFactory = ({ IDL }) => {
     'location' : IDL.Text,
   });
   const UserProfile = IDL.Record({ 'name' : IDL.Text });
+  const Review = IDL.Record({
+    'id' : IDL.Nat,
+    'createdAt' : IDL.Int,
+    'reviewerName' : IDL.Text,
+    'comment' : IDL.Text,
+    'rating' : IDL.Nat,
+    'providerId' : IDL.Nat,
+  });
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
@@ -128,9 +151,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(ServiceProvider)],
         ['query'],
       ),
+    'getAverageRating' : IDL.Func([IDL.Nat], [IDL.Opt(IDL.Nat)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getProvider' : IDL.Func([IDL.Nat], [IDL.Opt(ServiceProvider)], ['query']),
+    'getReviewsForProvider' : IDL.Func([IDL.Nat], [IDL.Vec(Review)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -162,6 +187,11 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Opt(ServiceCategory), IDL.Opt(IDL.Text)],
         [IDL.Vec(ServiceProvider)],
         ['query'],
+      ),
+    'submitReview' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Nat, IDL.Text],
+        [IDL.Nat],
+        [],
       ),
   });
 };

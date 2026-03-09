@@ -13,6 +13,14 @@ import type { Principal } from '@icp-sdk/core/principal';
 export type ProviderStatus = { 'pending' : null } |
   { 'approved' : null } |
   { 'rejected' : null };
+export interface Review {
+  'id' : bigint,
+  'createdAt' : bigint,
+  'reviewerName' : string,
+  'comment' : string,
+  'rating' : bigint,
+  'providerId' : bigint,
+}
 export type ServiceCategory = { 'plumber' : null } |
   { 'other' : null } |
   { 'hvac' : null } |
@@ -43,9 +51,11 @@ export interface _SERVICE {
   'approveProvider' : ActorMethod<[bigint], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'getApprovedProviders' : ActorMethod<[], Array<ServiceProvider>>,
+  'getAverageRating' : ActorMethod<[bigint], [] | [bigint]>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getProvider' : ActorMethod<[bigint], [] | [ServiceProvider]>,
+  'getReviewsForProvider' : ActorMethod<[bigint], Array<Review>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'listPendingProviders' : ActorMethod<[], Array<ServiceProvider>>,
@@ -59,6 +69,7 @@ export interface _SERVICE {
     [[] | [ServiceCategory], [] | [string]],
     Array<ServiceProvider>
   >,
+  'submitReview' : ActorMethod<[bigint, string, bigint, string], bigint>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

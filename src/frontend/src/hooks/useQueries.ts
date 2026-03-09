@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ServiceCategory, ServiceProvider } from "../backend";
+import type { Review, ServiceCategory, ServiceProvider } from "../backend";
 import { useActor } from "./useActor";
 
 // ─────────────────────────────────────────────
@@ -127,6 +127,68 @@ export function useRejectProvider() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pendingProviders"] });
+    },
+  });
+}
+
+// ─────────────────────────────────────────────
+// Query: Reviews for a provider
+// ─────────────────────────────────────────────
+export function useReviewsForProvider(providerId: bigint | null) {
+  const { actor, isFetching } = useActor();
+  return useQuery<Review[]>({
+    queryKey: ["reviews", providerId?.toString() ?? "null"],
+    queryFn: async () => {
+      if (!actor || providerId === null) return [];
+      return actor.getReviewsForProvider(providerId);
+    },
+    enabled: !!actor && !isFetching && providerId !== null,
+  });
+}
+
+// ─────────────────────────────────────────────
+// Query: Average rating for a provider
+// ─────────────────────────────────────────────
+export function useAverageRating(providerId: bigint | null) {
+  const { actor, isFetching } = useActor();
+  return useQuery<bigint | null>({
+    queryKey: ["averageRating", providerId?.toString() ?? "null"],
+    queryFn: async () => {
+      if (!actor || providerId === null) return null;
+      return actor.getAverageRating(providerId);
+    },
+    enabled: !!actor && !isFetching && providerId !== null,
+  });
+}
+
+// ─────────────────────────────────────────────
+// Mutation: Submit a review
+// ─────────────────────────────────────────────
+export function useSubmitReview() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: {
+      providerId: bigint;
+      reviewerName: string;
+      rating: bigint;
+      comment: string;
+    }) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.submitReview(
+        data.providerId,
+        data.reviewerName,
+        data.rating,
+        data.comment,
+      );
+    },
+    onSuccess: (_result, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["reviews", variables.providerId.toString()],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["averageRating", variables.providerId.toString()],
+      });
     },
   });
 }

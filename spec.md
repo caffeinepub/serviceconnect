@@ -1,41 +1,36 @@
-# ServiceConnect
+# help
 
 ## Current State
-New project. No existing code.
+
+ServiceConnect (now "help") is a service provider directory with:
+- Landing page with service categories
+- Browse page to search/filter approved providers
+- Register page for provider self-registration
+- Admin page for approving/rejecting pending registrations
+
+Backend has: `ServiceProvider`, `ServiceCategory`, `ProviderStatus` types and CRUD functions. Authorization (admin/user/guest roles) is enabled.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Service provider registration: name, contact info, service category (medical/nurse, plumbing, electrical, carpentry, cleaning, etc.), years of experience, location/area served, availability, and a short bio
-- Public directory: anyone can browse and search registered service providers by category or location
-- Provider profile page: shows all provider details plus a contact button
-- Admin-like view for managing/listing providers (optional: basic review status)
-- Sample service categories: Medical Nurse, Plumber, Electrician, Carpenter, House Cleaning, Painter, HVAC Technician
+- `Review` type in backend: id, providerId, reviewerName, rating (1-5), comment, createdAt
+- `submitReview(providerId, reviewerName, rating, comment)` -- public, no auth required
+- `getReviewsForProvider(providerId)` -- public query returning all reviews for a provider
+- `getAverageRating(providerId)` -- public query returning average star rating
+- Review form UI on provider detail view (in BrowsePage) with: reviewer name, star rating (1-5), comment textarea, submit button
+- Reviews list displayed beneath provider details showing star rating, reviewer name, comment, date
+- Average rating badge shown on provider cards in the browse grid
 
 ### Modify
-N/A
+- BrowsePage: Add reviews section to provider detail panel/modal; show average star rating on provider cards
 
 ### Remove
-N/A
+- Nothing
 
 ## Implementation Plan
 
-### Backend (Motoko)
-- `ServiceCategory` variant: Nurse, Plumber, Electrician, Carpenter, Cleaner, Painter, HVAC, Other
-- `ProviderStatus` variant: Pending, Approved, Rejected
-- `ServiceProvider` record: id, name, email, phone, category, yearsExperience, location, availability, bio, status, registeredAt
-- `registerProvider(input)` -> returns new provider id
-- `getProviders()` -> returns all approved providers
-- `getProviderById(id)` -> returns single provider
-- `searchProviders(category, location)` -> filtered list
-- `getPendingProviders()` -> admin: list pending registrations
-- `updateProviderStatus(id, status)` -> admin: approve/reject
-- Stable storage for providers map
-
-### Frontend
-- Landing page: hero section explaining the platform, CTA to register or browse
-- Browse/Search page: filter by category and location, grid of provider cards
-- Provider detail page/modal: full profile with contact info
-- Register page: multi-field form for provider self-registration
-- Admin page (accessible by canister owner): list pending providers, approve/reject buttons
-- Responsive layout with navigation
+1. Add `Review` type and review map (`nextReviewId` counter) to `main.mo`
+2. Add `submitReview`, `getReviewsForProvider`, `getAverageRating` functions to `main.mo`
+3. Update `backend.d.ts` with new `Review` type and function signatures
+4. Update BrowsePage to show average star rating on provider cards
+5. Add review submission form and reviews list to provider detail view

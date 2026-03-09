@@ -11,7 +11,9 @@ import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   // Initialize the access control system
   let accessControlState = AccessControl.initState();
@@ -47,8 +49,9 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // ID counter
+  // ID counters
   var nextProviderId = 1;
+  var nextReviewId = 1;
 
   // Service categories
   public type ServiceCategory = {
@@ -84,13 +87,30 @@ actor {
     registeredAt : Int;
   };
 
-  // Stable map for providers
+  // Review record
+  public type Review = {
+    id : Nat;
+    providerId : Nat;
+    reviewerName : Text;
+    rating : Nat;
+    comment : Text;
+    createdAt : Int;
+  };
+
+  // Stable maps for providers and reviews
   let providers = Map.empty<Nat, ServiceProvider>();
+  let reviews = Map.empty<Nat, Review>();
 
   // Comparison functions
   module ServiceProvider {
     public func compare(a : ServiceProvider, b : ServiceProvider) : Order.Order {
       Nat.compare(a.id, b.id);
+    };
+  };
+
+  module Review {
+    public func compare(a : Review, b : Review) : Order.Order {
+      Int.compare(a.createdAt, b.createdAt);
     };
   };
 
@@ -222,6 +242,76 @@ actor {
       case null {
         Runtime.trap("Provider not found");
       };
+    };
+  };
+
+  // ----- Review Functions -----
+
+  // Any user can submit a review for a provider
+  public shared ({ caller }) func submitReview(
+    providerId : Nat,
+    reviewerName : Text,
+    rating : Nat,
+    comment : Text,
+  ) : async Nat {
+    // Validate rating is between 1 and 5
+    if (rating < 1 or rating > 5) {
+      Runtime.trap("Rating must be between 1 and 5");
+    };
+
+    // Validate provider exists and is approved
+    switch (providers.get(providerId)) {
+      case (?provider) {
+        if (provider.status != #approved) {
+          Runtime.trap("Can only review approved service providers");
+        };
+      };
+      case null {
+        Runtime.trap("Provider not found");
+      };
+    };
+
+    let id = nextReviewId;
+    let review : Review = {
+      id;
+      providerId;
+      reviewerName;
+      rating;
+      comment;
+      createdAt = Time.now();
+    };
+    reviews.add(id, review);
+    nextReviewId += 1;
+    id;
+  };
+
+  // Anyone can get all reviews for a specific provider
+  public query ({ caller }) func getReviewsForProvider(providerId : Nat) : async [Review] {
+    let reviewList = List.empty<Review>();
+    for (review in reviews.values()) {
+      if (review.providerId == providerId) {
+        reviewList.add(review);
+      };
+    };
+    reviewList.toArray();
+  };
+
+  // Anyone can get the average rating for a provider
+  public query ({ caller }) func getAverageRating(providerId : Nat) : async ?Nat {
+    var sum = 0;
+    var count = 0;
+
+    for (review in reviews.values()) {
+      if (review.providerId == providerId) {
+        sum += review.rating;
+        count += 1;
+      };
+    };
+
+    if (count == 0) {
+      null;
+    } else {
+      ?(sum / count);
     };
   };
 };

@@ -7,6 +7,14 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
+export interface Review {
+    id: bigint;
+    createdAt: bigint;
+    reviewerName: string;
+    comment: string;
+    rating: bigint;
+    providerId: bigint;
+}
 export interface ServiceProvider {
     id: bigint;
     bio: string;
@@ -47,9 +55,11 @@ export interface backendInterface {
     approveProvider(id: bigint): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     getApprovedProviders(): Promise<Array<ServiceProvider>>;
+    getAverageRating(providerId: bigint): Promise<bigint | null>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getProvider(id: bigint): Promise<ServiceProvider | null>;
+    getReviewsForProvider(providerId: bigint): Promise<Array<Review>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     listPendingProviders(): Promise<Array<ServiceProvider>>;
@@ -57,4 +67,5 @@ export interface backendInterface {
     rejectProvider(id: bigint): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     searchProviders(category: ServiceCategory | null, location: string | null): Promise<Array<ServiceProvider>>;
+    submitReview(providerId: bigint, reviewerName: string, rating: bigint, comment: string): Promise<bigint>;
 }
