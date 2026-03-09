@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   FONT FACES
+   ============================================ */
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque-Variable.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================
+   DESIGN TOKENS (OKLCH)
+   ServiceConnect - Professional & Trustworthy
+   Palette: Deep Forest + Warm Amber + Cream
+   ============================================ */
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* Core palette */
+    --background: 0.97 0.008 95;
+    --foreground: 0.18 0.025 250;
+
+    --card: 1 0 0;
+    --card-foreground: 0.18 0.025 250;
+
+    --popover: 1 0 0;
+    --popover-foreground: 0.18 0.025 250;
+
+    /* Primary: Deep forest teal */
+    --primary: 0.38 0.095 195;
+    --primary-foreground: 0.98 0.005 100;
+
+    /* Secondary: warm amber */
+    --secondary: 0.92 0.045 85;
+    --secondary-foreground: 0.22 0.035 60;
+
+    /* Muted */
+    --muted: 0.93 0.01 95;
+    --muted-foreground: 0.52 0.018 250;
+
+    /* Accent: Amber/gold */
+    --accent: 0.78 0.12 75;
+    --accent-foreground: 0.18 0.04 55;
+
+    /* Destructive */
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.98 0 0;
+
+    /* Borders */
+    --border: 0.88 0.015 95;
+    --input: 0.9 0.012 95;
+    --ring: 0.38 0.095 195;
+
+    /* Charts */
+    --chart-1: 0.38 0.095 195;
+    --chart-2: 0.78 0.12 75;
+    --chart-3: 0.65 0.14 150;
+    --chart-4: 0.55 0.18 30;
+    --chart-5: 0.7 0.1 230;
+
+    /* Sidebar */
+    --sidebar: 0.22 0.04 210;
+    --sidebar-foreground: 0.95 0.008 100;
+    --sidebar-primary: 0.78 0.12 75;
+    --sidebar-primary-foreground: 0.18 0.04 55;
+    --sidebar-accent: 0.3 0.05 210;
+    --sidebar-accent-foreground: 0.95 0.008 100;
+    --sidebar-border: 0.32 0.04 210;
+    --sidebar-ring: 0.78 0.12 75;
+
+    /* Custom service colors */
+    --service-nurse: 0.62 0.18 15;
+    --service-plumber: 0.48 0.13 220;
+    --service-electrician: 0.72 0.15 85;
+    --service-carpenter: 0.55 0.12 50;
+    --service-cleaner: 0.55 0.14 175;
+    --service-painter: 0.6 0.18 295;
+    --service-hvac: 0.5 0.12 200;
+    --service-other: 0.55 0.08 250;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+@layer utilities {
+  .gradient-hero {
+    background: linear-gradient(
+      135deg,
+      oklch(0.22 0.06 210) 0%,
+      oklch(0.32 0.08 195) 50%,
+      oklch(0.28 0.07 220) 100%
+    );
+  }
+
+  .gradient-section {
+    background: linear-gradient(
+      180deg,
+      oklch(0.97 0.008 95) 0%,
+      oklch(0.94 0.012 200 / 0.3) 100%
+    );
+  }
+
+  .text-service-nurse { color: oklch(var(--service-nurse)); }
+  .text-service-plumber { color: oklch(var(--service-plumber)); }
+  .text-service-electrician { color: oklch(var(--service-electrician)); }
+  .text-service-carpenter { color: oklch(var(--service-carpenter)); }
+  .text-service-cleaner { color: oklch(var(--service-cleaner)); }
+  .text-service-painter { color: oklch(var(--service-painter)); }
+  .text-service-hvac { color: oklch(var(--service-hvac)); }
+  .text-service-other { color: oklch(var(--service-other)); }
+
+  .bg-service-nurse { background-color: oklch(var(--service-nurse) / 0.12); }
+  .bg-service-plumber { background-color: oklch(var(--service-plumber) / 0.12); }
+  .bg-service-electrician { background-color: oklch(var(--service-electrician) / 0.12); }
+  .bg-service-carpenter { background-color: oklch(var(--service-carpenter) / 0.12); }
+  .bg-service-cleaner { background-color: oklch(var(--service-cleaner) / 0.12); }
+  .bg-service-painter { background-color: oklch(var(--service-painter) / 0.12); }
+  .bg-service-hvac { background-color: oklch(var(--service-hvac) / 0.12); }
+  .bg-service-other { background-color: oklch(var(--service-other) / 0.12); }
+
+  .border-service-nurse { border-color: oklch(var(--service-nurse) / 0.3); }
+  .border-service-plumber { border-color: oklch(var(--service-plumber) / 0.3); }
+  .border-service-electrician { border-color: oklch(var(--service-electrician) / 0.3); }
+  .border-service-carpenter { border-color: oklch(var(--service-carpenter) / 0.3); }
+  .border-service-cleaner { border-color: oklch(var(--service-cleaner) / 0.3); }
+  .border-service-painter { border-color: oklch(var(--service-painter) / 0.3); }
+  .border-service-hvac { border-color: oklch(var(--service-hvac) / 0.3); }
+  .border-service-other { border-color: oklch(var(--service-other) / 0.3); }
+}
